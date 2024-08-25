@@ -1,21 +1,131 @@
 {
-    "projects": [],
-    "categories": [
+  "projects": [
+    {
+      "id": "033d",
+      "name": "teste 4",
+      "budget": "4",
+      "category": {
+        "id": "3",
+        "name": "Design"
+      },
+      "cost": 0,
+      "services": []
+    },
+    {
+      "id": "6a0c",
+      "name": "Teste 1",
+      "budget": "1000",
+      "category": {
+        "id": "2",
+        "name": "Desenvolvimento"
+      },
+      "cost": 500,
+      "services": [
         {
-            "id": 1,
-            "name": "Infra"
+          "name": "teste",
+          "cost": "100",
+          "description": "teste",
+          "id": "299c1a14-a6f1-43b8-94ad-a0a2d79e7883"
         },
         {
-            "id": 2,
-            "name": "Desenvolvimento"
+          "name": "Teste 1",
+          "cost": "100",
+          "description": "teste",
+          "id": "9a50bf9f-5b58-40b2-b35a-d2498b2f74e3"
         },
         {
-            "id": 3,
-            "name": "Design"
+          "name": "Teste 2",
+          "cost": "100",
+          "description": "100",
+          "id": "c3791c13-3b7c-4f5f-a5d1-0c7302b17b62"
         },
         {
-            "id": 4,
-            "name": "Planejamento"
+          "name": "teste 3",
+          "cost": "100",
+          "description": "teste",
+          "id": "5c90fd04-bff6-490a-bee1-e0f793739fa5"
+        },
+        {
+          "name": "teste 4 ",
+          "cost": "100",
+          "description": "teste",
+          "id": "1480b783-5e28-447d-bfb0-010edf65e775"
         }
-    ]
+      ]
+    },
+    {
+      "id": "54dc",
+      "name": "Teste 2",
+      "budget": "4",
+      "category": {
+        "id": "4",
+        "name": "Planejamento"
+      },
+      "cost": 0,
+      "services": []
+    },
+    {
+      "id": "568b",
+      "name": "Teste 3",
+      "budget": "1",
+      "category": {
+        "id": "1",
+        "name": "Infra"
+      },
+      "cost": 0,
+      "services": []
+    },
+    {
+      "id": "c3e2",
+      "name": "teste",
+      "budget": "4",
+      "category": {
+        "id": "3",
+        "name": "Design"
+      },
+      "cost": 0,
+      "services": []
+    },
+    {
+      "id": "8a85",
+      "name": "Teste 12",
+      "budget": "133",
+      "category": {
+        "id": "1",
+        "name": "Infra"
+      },
+      "cost": 132,
+      "services": [
+        {
+          "name": "desenho",
+          "cost": "15",
+          "description": "teste",
+          "id": "e9486979-f40c-4dd4-829a-0386b652c828"
+        },
+        {
+          "name": "Teste 2",
+          "cost": "117",
+          "id": "49849298-fbd8-4949-9c82-59cf27d37406"
+        }
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "name": "Infra"
+    },
+    {
+      "id": "2",
+      "name": "Desenvolvimento"
+    },
+    {
+      "id": "3",
+      "name": "Design"
+    },
+    {
+      "id": "4",
+      "name": "Planejamento"
+    }
+  ]
 }
