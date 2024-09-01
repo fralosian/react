@@ -1,42 +1,35 @@
-import styles from './ProjectCard.module.css' // Importa os estilos específicos para o componente
-import { Link } from "react-router-dom"; // Importa o componente Link para navegação entre páginas
+import { Link } from "react-router-dom";
+import { BsPencil, BsFillTrashFill } from 'react-icons/bs';
+import { useColors } from '../layout/ColorContext';
 
-import { BsPencil, BsFillTrashFill } from 'react-icons/bs' // Importa ícones de edição e exclusão
-
-// Define o componente funcional ProjectCard
 function ProjectCard({ id, name, budget, category, handleRemove }) {
-
-    // Função chamada ao clicar no botão de exclusão, previne o comportamento padrão e chama a função handleRemove
     const remove = (e) => {
-        e.preventDefault() // Previne o comportamento padrão do formulário
-        handleRemove(id) // Chama a função de remoção passando o id do projeto
-    }
+        e.preventDefault();
+        handleRemove(id);
+    };
 
-    // Renderiza o layout do cartão de projeto
+    const colors = useColors();
+    const categoryClass = colors[`category-${category.toLowerCase()}`] || '';
+
     return (
-        <div className={styles.project_card}>
-            {/* Exibe o nome do projeto */}
-            <h4>{name}</h4>
-            {/* Exibe o orçamento do projeto */}
-            <p>
-                <span>Orçamento:</span> R$ {budget}
+        <div className="p-4 border border-gray-400 rounded w-full md:w-1/4 mx-2 mb-4">
+            <h4 className="bg-gray-800 text-yellow-400 p-2 mb-4 text-xl">{name}</h4>
+            <p className="text-gray-600 mb-4">
+                <span className="font-bold">Orçamento:</span> R$ {budget}
             </p>
-            {/* Exibe a categoria do projeto com um estilo específico */}
-            <p className={styles.category_text}>
-                <span className={`${styles[category.toLowerCase()]}`}></span> {category}
+            <p className="flex items-center mb-4">
+                <span className={`w-3 h-3 rounded-full mr-2 ${categoryClass}`}></span> {category}
             </p>
-            <div className={styles.project_card_actions}>
-                {/* Link para a página de edição do projeto */}
-                <Link to={`/project/${id}`}>
-                    <BsPencil /> Editar
+            <div className="flex space-x-4">
+                <Link to={`/project/${id}`} className="text-gray-800 border border-gray-800 p-2 flex items-center hover:bg-gray-800 hover:text-yellow-400">
+                    <BsPencil className="mr-1" /> Editar
                 </Link>
-                {/* Botão para excluir o projeto */}
-                <button onClick={remove}>
-                    <BsFillTrashFill /> Excluir
+                <button onClick={remove} className="text-gray-800 border border-gray-800 p-2 flex items-center hover:bg-gray-800 hover:text-yellow-400">
+                    <BsFillTrashFill className="mr-1" /> Excluir
                 </button>
             </div>
-        </div >
-    )
+        </div>
+    );
 }
 
-export default ProjectCard // Exporta o componente para ser usado em outras partes do aplicativo
+export default ProjectCard;

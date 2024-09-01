@@ -1,10 +1,9 @@
-import styles from './Loading.module.css'
 import loading from '../../img/loading.svg'
 
 function Loading() {
     return (
-        <div className={styles.loader_container}>
-            <img className={styles.loader} src={loading} alt='Loading' />
+        <div className="w-full h-full flex justify-center items-center">
+            <img className="w-12" src={loading} alt='Loading' />
         </div>
     )
 }

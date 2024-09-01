@@ -1,23 +1,23 @@
 import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa'
 
-import styles from './Footer.module.css'
-
-
 function Footer() {
     return (
-        <footer className={styles.footer}>
-            <ul className={styles.social_list}>
-                <li>
-                    <FaFacebook />
+        <footer className="bg-gray-900 text-white p-5 text-center">
+            <ul className="flex justify-center list-none">
+                <li className="mx-3 hover:text-yellow-400">
+                    <FaFacebook className="text-2xl cursor-pointer" />
                 </li>
-                <li>
-                    <FaInstagram />
+                <li className="mx-3 hover:text-yellow-400">
+                    <FaInstagram className="text-2xl cursor-pointer" />
                 </li>
-                <li>
-                    <FaLinkedin />
+                <li className="mx-3 hover:text-yellow-400">
+                    <a href="https://www.linkedin.com/in/danielalves-silva/" target="_blank" rel="noopener noreferrer"><FaLinkedin className="text-2xl cursor-pointer" />
+                    </a>
                 </li>
             </ul>
-            <p className={styles.copy_right}><span>Costs</span> &copy; 2024</p>
+            <p className="mt-5">
+                <span className="font-bold text-yellow-400">Daniel Alves</span> &copy; 2024
+            </p>
         </footer>
     )
 }
