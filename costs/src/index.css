@@ -1,11 +1,4 @@
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  font-family: 'Open Sans', sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-html,body, #root{
-  background-color: #efefef;
-  height: 100%;
-}

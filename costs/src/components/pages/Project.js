@@ -1,93 +1,84 @@
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
+import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useColors } from '../layout/ColorContext'; // Certifique-se de que o caminho está correto
 
-import styles from './Project.module.css' // Importa os estilos específicos para o componente
+import Loading from '../layout/Loading';
+import Container from '../layout/Container';
+import ProjectForm from '../project/ProjectForm';
+import Message from '../layout/Message';
+import ServiceForm from '../service/ServiceForm';
+import ServiceCard from '../service/ServiceCard';
 
-import { useParams } from 'react-router-dom' // Importa o hook useParams para acessar parâmetros da rota
-import { useState, useEffect } from 'react' // Importa hooks do React
-
-import Loading from '../layout/Loading' // Importa o componente Loading para indicar carregamento
-import Container from '../layout/Container' // Importa o componente Container para layout
-import ProjectForm from '../project/ProjectForm' // Importa o componente ProjectForm para o formulário de edição
-import Message from '../layout/Message' // Importa o componente Message para exibir mensagens ao usuário
-import ServiceForm from '../service/ServiceForm' // Importa o componente ServiceForm para o formulário de adição de serviços
-import ServiceCard from '../service/ServiceCard' // Importa o componente ServiceCard para o card de serviço
-
-
-// Define o componente funcional Project
 function Project() {
+    const { id } = useParams();
+    const colors = useColors(); // Use o hook para obter as cores
 
-    const { id } = useParams() // Extrai o parâmetro 'id' da URL usando useParams
+    const [project, setProject] = useState([]);
+    const [services, setServices] = useState([]);
+    const [showProjectForm, setShowProjectForm] = useState(false);
+    const [showServiceForm, setShowServiceForm] = useState(false);
+    const [message, setMessage] = useState();
+    const [type, setType] = useState();
+    const [editService, setEditService] = useState(null); // Novo estado para o serviço em edição
+    const [editedServiceData, setEditedServiceData] = useState({ name: '', cost: '', description: '' }); // Dados do serviço em edição
 
-    const [project, setProject] = useState([]) // State para armazenar os dados do projeto
-    const [services, setServices] = useState([]) // State para armazenar os dados dos serviços
-    const [showProjectForm, setShowProjectForm] = useState(false) // State para controlar a visibilidade do formulário de edição do projeto
-    const [showServiceForm, setShowServiceForm] = useState(false) // State para controlar a visibilidade do formulário de adição de serviços
-    const [message, setMessage] = useState() // State para armazenar mensagens de sucesso ou erro
-    const [type, setType] = useState() // State para armazenar o tipo de mensagem (sucesso ou erro)
-
-    // Hook useEffect para buscar os dados do projeto da API quando o componente é montado ou quando o 'id' muda
     useEffect(() => {
         setTimeout(() => {
-            fetch(`http://localhost:5000/projects/${id}`, { // Faz uma requisição GET para buscar o projeto com o id específico
-                method: 'GET', // Método GET para buscar dados
+            fetch(`http://localhost:5000/projects/${id}`, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json', // Define o tipo de conteúdo como JSON
+                    'Content-Type': 'application/json',
                 },
             })
-                .then((resp) => resp.json()) // Converte a resposta para JSON
+                .then((resp) => resp.json())
                 .then((data) => {
-                    setProject(data) // Atualiza o state com os dados do projeto recebidos da API
-                    setServices(data.services) // Atualiza o state com os dados dos serviços do projeto
+                    setProject(data);
+                    setServices(data.services);
                 })
-                .catch((err) => console.log) // Captura e exibe erros, se houver
-        }, 2000)
-    }, [id]) // Dependência 'id' para refazer a busca sempre que o id mudar
+                .catch((err) => console.log(err));
+        }, 2000);
+    }, [id]);
 
-    // Função para editar o projeto existente
     function editPost(project) {
-        setMessage('') // Limpa qualquer mensagem existente
+        setMessage('');
 
-        // Valida se o orçamento do projeto é maior ou igual ao custo
         if (project.budget < project.cost) {
-            setMessage('O orçamento não pode ser menor que o custo') // Define mensagem de erro
-            setType('error') // Define o tipo de mensagem como erro
-            return false // Interrompe a função se a validação falhar
+            setMessage('O orçamento não pode ser menor que o custo');
+            setType('error');
+            return false;
         }
 
-        // Faz uma requisição PATCH para atualizar os dados do projeto
         fetch(`http://localhost:5000/projects/${project.id}`, {
-            method: 'PATCH', // Método PATCH para atualizar parcialmente os dados
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(project), // Converte o projeto para JSON
+            body: JSON.stringify(project),
         })
-            .then((resp) => resp.json()) // Converte a resposta para JSON
+            .then((resp) => resp.json())
             .then((data) => {
-                setProject(data) // Atualiza o state com os dados do projeto atualizados
-                setShowProjectForm(false) // Oculta o formulário de edição
-                setMessage('Projeto atualizado com sucesso!') // Define mensagem de sucesso
-                setType('success') // Define o tipo de mensagem como sucesso
+                setProject(data);
+                setShowProjectForm(false);
+                setMessage('Projeto atualizado com sucesso!');
+                setType('success');
             })
             .catch((err) => {
-                setMessage('Erro ao atualizar o projeto.') // Define mensagem de erro em caso de falha
-                setType('error') // Define o tipo de mensagem como erro
-                console.log(err) // Exibe o erro no console
-            })
+                setMessage('Erro ao atualizar o projeto.');
+                setType('error');
+                console.log(err);
+            });
     }
+
     function createService(project) {
-        // Reseta a mensagem antes de iniciar o processo
         setMessage('');
 
-        // Último serviço
         const lastService = project.services[project.services.length - 1];
-
         lastService.id = uuidv4();
 
         const lastServiceCost = lastService.cost;
         const newCost = parseFloat(project.cost) + parseFloat(lastServiceCost);
 
-        // Validação: valor máximo do orçamento  
         if (newCost > parseFloat(project.budget)) {
             setMessage(null); // Reseta a mensagem temporariamente
             setTimeout(() => {
@@ -99,10 +90,8 @@ function Project() {
             return false;
         }
 
-        // Adicionar service cost ao custo total
         project.cost = newCost;
 
-        // Atualizar projeto
         fetch(`http://localhost:5000/projects/${project.id}`, {
             method: 'PATCH',
             headers: {
@@ -112,6 +101,8 @@ function Project() {
         })
             .then((resp) => resp.json())
             .then((data) => {
+                setProject(data);
+                setServices(data.services); // Atualiza o estado dos serviços diretamente
                 setShowServiceForm(false);
                 setMessage(null); // Reseta a mensagem temporariamente
                 setTimeout(() => {
@@ -127,15 +118,12 @@ function Project() {
     }
 
     function removeService(id, cost) {
-        setMessage('')
+        setMessage('');
 
         const servicesUpdated = project.services.filter(
             (service) => service.id !== id
-        )
-        const projectUpdated = project
-
-        projectUpdated.services = servicesUpdated
-        projectUpdated.cost = parseFloat(projectUpdated.cost) - parseFloat(cost)
+        );
+        const projectUpdated = { ...project, services: servicesUpdated, cost: parseFloat(project.cost) - parseFloat(cost) };
 
         fetch(`http://localhost:5000/projects/${project.id}`, {
             method: 'PATCH',
@@ -146,92 +134,209 @@ function Project() {
         })
             .then((resp) => resp.json())
             .then((data) => {
-                setProject(projectUpdated)
-                setServices(servicesUpdated)
-                setMessage('Serviço removido com sucesso!')
-                setType('success')
-            }).catch((err) => console.log(err))
+                setProject(data); // Atualiza o estado com os dados retornados
+                setServices(servicesUpdated); // Atualiza o estado dos serviços diretamente
+                setMessage('Serviço removido com sucesso!');
+                setType('success');
+            })
+            .catch((err) => console.log(err));
     }
-    // Função para alternar a visibilidade do formulário de edição do projeto
+
+    function startEditingService(service) {
+        setEditService(service);
+        setEditedServiceData({
+            name: service.name,
+            cost: service.cost,
+            description: service.description,
+        });
+    }
+
+    function cancelEditing() {
+        setEditService(null);
+    }
+
+    function updateService(e) {
+        e.preventDefault();
+        setMessage('');
+
+        const updatedService = {
+            ...editService,
+            name: editedServiceData.name,
+            cost: editedServiceData.cost,
+            description: editedServiceData.description,
+        };
+
+        const updatedServices = services.map(service =>
+            service.id === updatedService.id ? updatedService : service
+        );
+        const updatedProject = { ...project, services: updatedServices, cost: updatedServices.reduce((acc, curr) => acc + parseFloat(curr.cost), 0) };
+
+        fetch(`http://localhost:5000/projects/${project.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedProject),
+        })
+            .then((resp) => resp.json())
+            .then((data) => {
+                setProject(data);
+                setServices(updatedServices);
+                setMessage('Serviço atualizado com sucesso!');
+                setType('success');
+                setEditService(null);
+            })
+            .catch((err) => {
+                console.log(err);
+                setMessage('Erro ao atualizar o serviço.');
+                setType('error');
+            });
+    }
+
+    function handleEditInputChange(e) {
+        const { name, value } = e.target;
+        setEditedServiceData({
+            ...editedServiceData,
+            [name]: value,
+        });
+    }
+
     function toggleProjectForm() {
-        setShowProjectForm(!showProjectForm) // Inverte o estado de visibilidade do formulário
+        setShowProjectForm(!showProjectForm);
     }
 
-    // Função para alternar a visibilidade do formulário de adição de serviços
     function toggleServiceForm() {
-        setShowServiceForm(!showServiceForm) // Inverte o estado de visibilidade do formulário de serviços
+        setShowServiceForm(!showServiceForm);
     }
 
-    // Retorna o JSX do componente
+    // Obtenha a classe de cor baseada no nome da categoria
+    const categoryColorClass = colors[`category-${project.category?.name.toLowerCase()}`] || 'bg-gray-300'; // Default color if category is not found
+
     return (
         <>
             {project.name ? (
-                <div className={styles.project_details}>
-                    <Container customClass="column">
-                        {message && <Message type={type} msg={message} />}
-                        <div className={styles.details_container}>
-                            <h1>Projeto: {project.name}</h1>
-                            <button className={styles.btn} onClick={toggleProjectForm}>
-                                {!showProjectForm ? 'Editar projeto' : 'Fechar'}
+                <div className="w-full p-8">
+                    <h1 className="text-4xl font-bold mb-4 bg-gray-800 text-yellow-400 p-4 text-center rounded-md">
+                        Projeto: {project.name}
+                    </h1>
+                    <div className="mb-4 p-4 bg-gray-800 text-yellow-400 rounded-md flex flex-col md:flex-row md:justify-between gap-4">
+                        <p className="text-lg font-semibold text-left">Orçamento: R$ <span className="font-bold">{parseFloat(project.budget).toFixed(2)}</span></p>
+                        <p className="text-lg font-semibold text-left">Gasto Atual: R$ <span className="font-bold">{parseFloat(project.cost).toFixed(2)}</span></p>
+                        <p className="text-lg font-semibold text-left">Restante: R$ <span className="font-bold">{(parseFloat(project.budget) - parseFloat(project.cost)).toFixed(2)}</span></p>
+                        <p className="text-lg font-semibold text-left">Categoria:
+                            <span className="font-bold">
+                                <span className={`w-4 h-4 rounded-full align-l inline-block mr-2 ${categoryColorClass}`}></span> {project.category?.name}
+                            </span>
+                        </p>
+                    </div>
+
+                    {message && <Message type={type} msg={message} />}
+                    <div className="flex flex-col md:flex-row mb-8">
+                        <div className="flex-1 mb-4 md:mb-0 md:mr-4">
+                            <button className="bg-gray-800 text-white px-4 py-2 rounded-md shadow hover:bg-gray-700 w-full" onClick={toggleProjectForm}>
+                                {!showProjectForm ? 'Editar Projeto' : 'Fechar'}
                             </button>
-                            {!showProjectForm ? (
-                                <div className={styles.project_info}>
-                                    <p><span>Categoria: </span>{project.category.name}</p>
-                                    <p><span>Total de orçamento:</span> R${project.budget}</p>
-                                    <p><span>Total Utilizado:</span> R${project.cost}</p>
-                                </div>
-                            ) : (
-                                <div className={styles.project_info}>
-                                    <ProjectForm
-                                        handleSubmit={editPost} // Passa a função de edição como prop
-                                        btnText={'Concluir edição'} // Texto do botão
-                                        projectData={project} // Passa os dados do projeto como prop
-                                    />
+                            {showProjectForm && (
+                                <div className="mt-4">
+                                    <ProjectForm handleSubmit={editPost} btnText={'Concluir edição'} projectData={project} />
                                 </div>
                             )}
                         </div>
-                        <div className={styles.service_form_container}>
-                            <h2>Adicione um serviço:</h2>
-                            <button className={styles.btn} onClick={toggleServiceForm}>
+                        <div className="flex-1">
+                            <button className="bg-gray-800 text-white px-4 py-2 rounded-md shadow hover:bg-gray-700 w-full" onClick={toggleServiceForm}>
                                 {!showServiceForm ? 'Adicionar Serviço' : 'Fechar'}
                             </button>
-                            <div className={styles.project_info}>
-                                {showServiceForm && (<ServiceForm
-                                    handleSubmit={createService}
-                                    btnText='Adicionar Serviço'
-                                    projectData={project}
-                                />
-                                )
-                                }
-                            </div>
+                            {showServiceForm && (
+                                <div className="mt-4">
+                                    <ServiceForm handleSubmit={createService} btnText='Adicionar Serviço' projectData={project} />
+                                </div>
+                            )}
                         </div>
-                        <h2>Serviços</h2>
-                        <Container customClass="start">
-                            {
-                                services.length > 0 &&
-                                services.map((service) => (
+                    </div>
+                    <h2 className="text-2xl font-semibold mb-4">Serviços</h2>
+                    <Container customClass="start">
+                        {services.length > 0 ? (
+                            services.map(service => (
+                                editService && editService.id === service.id ? (
+                                    //form de edição
+                                    <div key={service.id} className="mt-4">
+                                        <form onSubmit={updateService} className="bg-white border border-gray-900 mb-4 p-4 rounded-md shadow-lg">
+                                            <h3 className="text-xl font-semibold mb-4 text-yellow-400">Editar Serviço</h3>
+                                            <div className="mb-4">
+                                                <label htmlFor="name" className="block ">Nome:</label>
+                                                <input
+                                                    type="text"
+                                                    id="name"
+                                                    name="name"
+                                                    value={editedServiceData.name}
+                                                    onChange={handleEditInputChange}
+                                                    className="mt-1 block w-full border border-gray-800 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="mb-4">
+                                                <label htmlFor="cost" className="block ">Custo:</label>
+                                                <input
+                                                    type="number"
+                                                    id="cost"
+                                                    name="cost"
+                                                    value={editedServiceData.cost}
+                                                    onChange={handleEditInputChange}
+                                                    className="mt-1 block w-full border border-gray-800 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="mb-4">
+                                                <label htmlFor="description" className="block ">Descrição:</label>
+                                                <textarea
+                                                    id="description"
+                                                    name="description"
+                                                    value={editedServiceData.description}
+                                                    onChange={handleEditInputChange}
+                                                    className="mt-1 block w-full border border-gray-800 rounded-md shadow-sm px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="flex justify-end">
+                                                <button
+                                                    type="submit"
+                                                    className="flex items-center text-gray-800 border border-gray-800 p-2 hover:bg-gray-800 hover:text-yellow-400"
+                                                >
+                                                    Atualizar
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={cancelEditing}
+                                                    className="flex items-center ml-4 text-red-600 border border-gray-800 p-2 hover:bg-gray-800 hover:text-red-200"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                ) : (
                                     <ServiceCard
-                                        id={service.id}
-                                        name={service.name}
-                                        cost={service.cost}
-                                        description={service.description}
                                         key={service.id}
-                                        handleRemove={removeService}
+                                        id={service.id} // Certifique-se de passar o id
+                                        name={service.name} // Certifique-se de passar o name
+                                        cost={service.cost} // Certifique-se de passar o cost
+                                        description={service.description} // Certifique-se de passar a descrição
+                                        handleRemove={() => removeService(service.id, service.cost)} // Função para remover o serviço
+                                        handleEdit={() => startEditingService(service)} // Função para iniciar a edição do serviço
                                     />
-                                ))
-                            }
-                            {
-                                services.length === 0 &&
-                                <p>Não há Serviços cadastrados</p>
-                            }
-                        </Container>
+                                )
+                            ))
+                        ) : (
+                            <p>Nenhum serviço encontrado</p>
+                        )}
                     </Container>
                 </div>
             ) : (
-                <Loading /> // Exibe o componente de carregamento se os dados do projeto ainda não foram carregados
+                <Loading />
             )}
         </>
-    )
+    );
 }
 
-export default Project // Exporta o componente para ser usado em outras partes do aplicativo
+export default Project;

@@ -1,12 +1,16 @@
-import styles from './Container.module.css'
+import { ReactNode } from 'react';
 
-function Container(props) {
-
-    return (
-        <div className={`${styles.container} ${styles[props.customClass]}`} >
-            {props.children}
-        </div >
-    )
+interface ContainerProps {
+  children: ReactNode;
+  customClass?: string;
 }
 
-export default Container
+function Container({ children, customClass }: ContainerProps) {
+  return (
+    <div className={`w-full max-w-6xl mx-auto px-4 ${customClass}`}>
+      {children}
+    </div>
+  );
+}
+
+export default Container;
